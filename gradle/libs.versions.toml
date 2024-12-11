@@ -11,10 +11,13 @@ activityCompose = "1.9.3"
 composeBom = "2024.04.01"
 appCompact = "1.7.0"
 constraintLyt = "2.2.0"
-navVersion = "2.1.0-alpha02"
+navVersion = "2.3.0-alpha03"
 roomVersion = "2.1.0"
 retrofitVersion = "2.6.0"
-daggerVersion = "2.25.4"
+daggerVersion = "2.48"
+materialDialogueVersion = "3.1.0"
+glideVersion = "4.10.0"
+imageCropVersion = "2.1.4"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -37,20 +40,28 @@ androidx-constraintlyt = { group = "androidx.constraintlayout", name = "constrai
 androidx-navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navVersion" }
 androidx-navigation-ui = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navVersion" }
 androidx-navigation-runtime = { group = "androidx.navigation", name = "navigation-runtime", version.ref = "navVersion" }
-androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "roomVersion"}
-androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomVersion"}
-androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomVersion"}
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "roomVersion" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomVersion" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomVersion" }
 
-squareup-retrofit2 = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofitVersion"}
-squareup-retrofit2-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofitVersion"}
+squareup-retrofit2 = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofitVersion" }
+squareup-retrofit2-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofitVersion" }
+
+afollestad-material-dialogs = { group = "com.afollestad.material-dialogs", name = "core", version.ref = "materialDialogueVersion" }
+
+bumptech-glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glideVersion" }
+bumptech-glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glideVersion" }
 
 dagger = { group = "com.google.dagger", name = "dagger", version.ref = "daggerVersion" }
 dagger-compiler = { group = "com.google.dagger", name = "dagger-compiler", version.ref = "daggerVersion" }
+
+image-cropper = { group = "com.theartofdev.edmodo", name = "android-image-cropper", version.ref = "imageCropVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+kotlin-parcelize = { id = "kotlin-parcelize" }
 
 

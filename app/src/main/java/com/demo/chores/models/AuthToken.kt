@@ -1,5 +1,6 @@
 package com.demo.chores.models
 
+import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
@@ -7,6 +8,9 @@ import androidx.room.ForeignKey.CASCADE
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
+
+const val AUTH_TOKEN_BUNDLE_KEY = "com.demo.chores.openapi.models.AuthToken"
 
 /**
  * Data class for saving authentication token locally for open-api.xyz
@@ -26,6 +30,7 @@ import com.google.gson.annotations.SerializedName
         )
     ]
 )
+@Parcelize
 data class AuthToken(
 
     @PrimaryKey
@@ -37,7 +42,7 @@ data class AuthToken(
     @SerializedName("token")
     @Expose
     var token: String = ""
-)
+) : Parcelable
 
 
 

@@ -6,15 +6,30 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 
 import com.demo.chores.R
 import com.demo.chores.databinding.FragmentLauncherBinding
+import com.demo.chores.di.auth.AuthScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import javax.inject.Inject
 
-
-class LauncherFragment : Fragment() {
+@FlowPreview
+@ExperimentalCoroutinesApi
+@AuthScope
+class LauncherFragment @Inject constructor() : Fragment() {
     private var _binding: FragmentLauncherBinding? = null
     private val binding get() = _binding!!
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    val viewModel: AuthViewModel by viewModels{
+        viewModelFactory
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

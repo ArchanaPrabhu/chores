@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.kapt)
-//    alias(libs.plugins)
+    alias(libs.plugins.kotlin.parcelize)
 }
 
 android {
@@ -78,6 +78,12 @@ dependencies {
 
     implementation(libs.squareup.retrofit2)
     implementation(libs.squareup.retrofit2.gson)
+    implementation(libs.afollestad.material.dialogs)
+
+    implementation(libs.bumptech.glide)
+    kapt(libs.bumptech.glide.compiler)
+
+//    implementation(libs.image.cropper)
 
     implementation(libs.dagger)
     kapt(libs.dagger.compiler)
