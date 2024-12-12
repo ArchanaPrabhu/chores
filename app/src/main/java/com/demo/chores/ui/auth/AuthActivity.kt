@@ -13,14 +13,19 @@ import com.demo.chores.BaseApplication
 import com.demo.chores.R
 import com.demo.chores.databinding.ActivityAuthBinding
 import com.demo.chores.fragments.auth.AuthNavHostFragment
+import com.demo.chores.repository.auth.AuthRepositoryImpl
 import com.demo.chores.ui.BaseActivity
 import com.demo.chores.ui.auth.AuthViewModel
 import com.demo.chores.ui.auth.state.AuthStateEvent
 import com.demo.chores.ui.main.MainActivity
 import com.demo.chores.util.StateMessageCallback
 import com.demo.chores.util.SuccessHandling.Companion.RESPONSE_CHECK_PREVIOUS_AUTH_USER_DONE
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @FlowPreview
@@ -113,6 +118,10 @@ class AuthActivity : BaseActivity() {
                 if (authToken != null && authToken.account_pk != -1 && authToken.token != null) {
                     navMainActivity()
                 }
+            }
+            CoroutineScope(IO).launch {
+                Log.d("Testing", (viewModel.authRepository as AuthRepositoryImpl).authTokenDao.searchByPk(1).toString())
+                Log.d("Testing", (viewModel.authRepository as AuthRepositoryImpl).accountPropertiesDao.searchByPk(1).toString())
             }
         })
     }

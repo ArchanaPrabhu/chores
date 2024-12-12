@@ -81,9 +81,5 @@
                 android:id="@+id/forgot_password"
                 android:layout_marginTop="30dp"
                 />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
 </ScrollView>

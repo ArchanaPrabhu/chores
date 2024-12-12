@@ -113,6 +113,15 @@ constructor(
                     )
                 }
 
+                is RestoreBlogListWithDummyValue -> {
+                    blogRepository.restoreBlogListFromDummy(
+                        stateEvent = stateEvent,
+                        query = getSearchQuery(),
+                        filterAndOrder = getOrder() + getFilter(),
+                        page = getPage()
+                    )
+                }
+
                 is CheckAuthorOfBlogPost -> {
                     blogRepository.isAuthorOfBlogPost(
                         stateEvent = stateEvent,

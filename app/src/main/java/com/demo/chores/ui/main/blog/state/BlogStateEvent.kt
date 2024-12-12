@@ -29,6 +29,12 @@ sealed class BlogStateEvent: StateEvent {
         }
     }
 
+    class RestoreBlogListWithDummyValue: BlogStateEvent() {
+        override fun errorInfo(): String {
+            return "Unable to set blog list with dummy value"
+        }
+    }
+
     data class UpdateBlogPostEvent(
         val title: String,
         val body: String,

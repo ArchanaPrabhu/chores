@@ -65,6 +65,10 @@ constructor(
                     )
                 }
 
+                is DemoAccountPropertiesEvent -> {
+                    accountRepository.setupLocalAccountProperties(authToken, stateEvent)
+                }
+
                 else -> {
                     flow {
                         emit(

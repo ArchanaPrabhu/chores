@@ -39,6 +39,14 @@ constructor(
                 )
             }
 
+            is AuthStateEvent.PopulateFromCacheEvent -> {
+                authRepository.attemptLoginUsingCache(
+                    stateEvent = stateEvent,
+                    email = stateEvent.email,
+                    password = stateEvent.password
+                )
+            }
+
             is AuthStateEvent.RegisterAttemptEvent -> {
                 authRepository.attemptRegistration(
                     stateEvent = stateEvent,

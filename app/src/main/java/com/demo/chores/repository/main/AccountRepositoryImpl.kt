@@ -1,5 +1,6 @@
 package com.demo.chores.repository.main
 
+import android.content.SharedPreferences
 import android.util.Log
 import com.demo.chores.api.GenericResponse
 import com.demo.chores.api.main.OpenApiMainService
@@ -10,6 +11,7 @@ import com.demo.chores.persistence.AccountPropertiesDao
 import com.demo.chores.repository.NetworkBoundResource
 import com.demo.chores.repository.safeApiCall
 import com.demo.chores.session.SessionManager
+import com.demo.chores.ui.main.account.state.AccountStateEvent
 import com.demo.chores.ui.main.account.state.AccountViewState
 import com.demo.chores.util.*
 import kotlinx.coroutines.Dispatchers.IO
@@ -25,7 +27,8 @@ class AccountRepositoryImpl
 constructor(
     val openApiMainService: OpenApiMainService,
     val accountPropertiesDao: AccountPropertiesDao,
-    val sessionManager: SessionManager
+    val sessionManager: SessionManager,
+    val sharedPreferences: SharedPreferences
 ) : AccountRepository {
 
     private val TAG: String = "AppDebug"
@@ -68,6 +71,27 @@ constructor(
             }
 
         }.result
+    }
+
+    override fun setupLocalAccountProperties(
+        authToken: AuthToken,
+        stateEvent: StateEvent
+    ): Flow<DataState<AccountViewState>> {
+        return flow {
+            emit(
+                DataState(
+                    stateMessage = null,
+                    data = AccountViewState(
+                        AccountProperties(
+                            1,
+                            "prabhuarc27@gmail.com",
+                            username = "arprab"
+                        )
+                    ),
+                    stateEvent = stateEvent
+                )
+            )
+        }
     }
 
     override fun saveAccountProperties(

@@ -32,4 +32,9 @@ interface AccountRepository {
         confirmNewPassword: String,
         stateEvent: StateEvent
     ): Flow<DataState<AccountViewState>>
+
+    fun setupLocalAccountProperties(
+        authToken: AuthToken,
+        stateEvent: StateEvent
+    ): Flow<DataState<AccountViewState>>
 }

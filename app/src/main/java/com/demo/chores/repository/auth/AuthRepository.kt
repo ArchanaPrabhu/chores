@@ -17,6 +17,13 @@ interface AuthRepository {
         password: String
     ): Flow<DataState<AuthViewState>>
 
+    fun attemptLoginUsingCache(
+        stateEvent: StateEvent,
+        email: String,
+        password: String
+    ): Flow<DataState<AuthViewState>>
+
+
     fun attemptRegistration(
         stateEvent: StateEvent,
         email: String,

@@ -2,12 +2,12 @@ package com.demo.chores.ui.auth.state
 
 import com.demo.chores.util.StateEvent
 
-sealed class AuthStateEvent: StateEvent {
+sealed class AuthStateEvent : StateEvent {
 
     data class LoginAttemptEvent(
         val email: String,
         val password: String
-    ): AuthStateEvent() {
+    ) : AuthStateEvent() {
 
         override fun errorInfo(): String {
             return "Login attempt failed."
@@ -19,21 +19,31 @@ sealed class AuthStateEvent: StateEvent {
         val username: String,
         val password: String,
         val confirm_password: String
-    ): AuthStateEvent(){
+    ) : AuthStateEvent() {
 
         override fun errorInfo(): String {
             return "Register attempt failed."
         }
     }
 
-    class CheckPreviousAuthEvent(): AuthStateEvent() {
+    data class PopulateFromCacheEvent(
+        val email: String,
+        val password: String
+    ) : AuthStateEvent() {
+        override fun errorInfo(): String {
+            return "Error in populating dummy data for UI testing."
+        }
+
+    }
+
+    class CheckPreviousAuthEvent() : AuthStateEvent() {
 
         override fun errorInfo(): String {
             return "Error checking for previously authenticated user."
         }
     }
 
-    class None: AuthStateEvent() {
+    class None : AuthStateEvent() {
 
         override fun errorInfo(): String {
             return "None"

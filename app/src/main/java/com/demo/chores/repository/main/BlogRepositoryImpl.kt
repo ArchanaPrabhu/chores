@@ -38,8 +38,7 @@ constructor(
     val openApiMainService: OpenApiMainService,
     val blogPostDao: BlogPostDao,
     val sessionManager: SessionManager
-): BlogRepository
-{
+) : BlogRepository {
 
     private val TAG: String = "AppDebug"
     override fun searchBlogPosts(
@@ -49,7 +48,7 @@ constructor(
         page: Int,
         stateEvent: StateEvent
     ): Flow<DataState<BlogViewState>> {
-        return object: NetworkBoundResource<BlogListSearchResponse, List<BlogPost>, BlogViewState>(
+        return object : NetworkBoundResource<BlogListSearchResponse, List<BlogPost>, BlogViewState>(
             dispatcher = IO,
             stateEvent = stateEvent,
             apiCall = {
@@ -67,20 +66,23 @@ constructor(
                     page = page
                 )
             }
-        ){
+        ) {
             override suspend fun updateCache(networkObject: BlogListSearchResponse) {
                 val blogPostList = networkObject.toList()
                 withContext(IO) {
-                    for(blogPost in blogPostList){
-                        try{
+                    for (blogPost in blogPostList) {
+                        try {
                             // Launch each insert as a separate job to be executed in parallel
                             launch {
                                 Log.d(TAG, "updateLocalDb: inserting blog: ${blogPost}")
                                 blogPostDao.insert(blogPost)
                             }
-                        }catch (e: Exception){
-                            Log.e(TAG, "updateLocalDb: error updating cache data on blog post with slug: ${blogPost.slug}. " +
-                                    "${e.message}")
+                        } catch (e: Exception) {
+                            Log.e(
+                                TAG,
+                                "updateLocalDb: error updating cache data on blog post with slug: ${blogPost.slug}. " +
+                                        "${e.message}"
+                            )
                             // Could send an error report here or something but I don't think you should throw an error to the UI
                             // Since there could be many blog posts being inserted/updated.
                         }
@@ -109,19 +111,20 @@ constructor(
         filterAndOrder: String,
         page: Int,
         stateEvent: StateEvent
-    ) = flow{
+    ) = flow {
 
-        val cacheResult = safeCacheCall(IO){
+        val cacheResult = safeCacheCall(IO) {
             blogPostDao.returnOrderedBlogQuery(
                 query = query,
                 filterAndOrder = filterAndOrder,
-                page = page)
+                page = page
+            )
         }
         emit(
-            object: CacheResponseHandler<BlogViewState, List<BlogPost>>(
+            object : CacheResponseHandler<BlogViewState, List<BlogPost>>(
                 response = cacheResult,
                 stateEvent = stateEvent
-            ){
+            ) {
                 override suspend fun handleSuccess(
                     resultObj: List<BlogPost>
                 ): DataState<BlogViewState> {
@@ -141,22 +144,85 @@ constructor(
         )
     }
 
+    fun restoreBlogListFromDummy(
+        query: String,
+        filterAndOrder: String,
+        page: Int,
+        stateEvent: StateEvent
+    ) = flow {
+        emit(
+            DataState.data(
+                response = null,
+                data = BlogViewState(
+                    blogFields = BlogFields(
+                        blogList = listOf(
+                            BlogPost(pk = 1,
+                                "San Francisco Airport",
+                                "SFO Airport",
+                                "It was a great time to land in USA after 16 hrs of flight journey. I was very hungry, gassey, exhausted but excited to meet my husband",
+                                "https://upload.wikimedia.org/wikipedia/commons/d/de/San_Francisco_International_Airport_-_aerial_photo.jpg",
+                                1730937600000L,
+                                "arprab"),
+                            BlogPost(pk = 2,
+                                "Meals at San Bruno",
+                                "SF First Dinner ",
+                                "Ate the amazing North Indian meal from San Francisco dosa point.",
+                                "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2c/fa/35/77/naan-point-great-indian.jpg",
+                                1730937610000L,
+                                "naag"),
+                            BlogPost(pk = 3,
+                                "Home sweet home",
+                                "San Jose",
+                                "Reached my first home after marriage which is a rental space got by my husband. It's cute and sweet, but empty. ",
+                                "https://images1.apartments.com/i2/R97PCYKbX6MSh1ato6U_J6RLf5Na7MvQSjtbxyJdo4E/116/eaves-san-jose-san-jose-ca-primary-photo.jpg",
+                                1730937620000L,
+                                "arprab"),
+                            BlogPost(pk = 4,
+                                "San Francisco Airport",
+                                "SFO Airport",
+                                "It was a great time to land in USA after 16 hrs of flight journey. I was very hungry, gassey, exhausted but excited to meet my husband",
+                                "https://upload.wikimedia.org/wikipedia/commons/d/de/San_Francisco_International_Airport_-_aerial_photo.jpg",
+                                1730937600000L,
+                                "arprab"),
+                            BlogPost(pk = 5,
+                                "Meals at San Bruno",
+                                "SF First Dinner ",
+                                "Ate the amazing North Indian meal from San Francisco dosa point.",
+                                "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/2c/fa/35/77/naan-point-great-indian.jpg",
+                                1730937610000L,
+                                "naag"),
+                            BlogPost(pk = 6,
+                                "Home sweet home",
+                                "San Jose",
+                                "Reached my first home after marriage which is a rental space got by my husband. It's cute and sweet, but empty. ",
+                                "https://images1.apartments.com/i2/R97PCYKbX6MSh1ato6U_J6RLf5Na7MvQSjtbxyJdo4E/116/eaves-san-jose-san-jose-ca-primary-photo.jpg",
+                                1730937620000L,
+                                "arprab")
+                        )
+                    )
+                ),
+                stateEvent = stateEvent
+            )
+        )
+    }
+
+
     override fun isAuthorOfBlogPost(
         authToken: AuthToken,
         slug: String,
         stateEvent: StateEvent
     ) = flow {
-        val apiResult = safeApiCall(IO){
+        val apiResult = safeApiCall(IO) {
             openApiMainService.isAuthorOfBlogPost(
                 "Token ${authToken.token!!}",
                 slug
             )
         }
         emit(
-            object: ApiResponseHandler<BlogViewState, GenericResponse>(
+            object : ApiResponseHandler<BlogViewState, GenericResponse>(
                 response = apiResult,
                 stateEvent = stateEvent
-            ){
+            ) {
                 override suspend fun handleSuccess(resultObj: GenericResponse): DataState<BlogViewState> {
                     val viewState = BlogViewState(
                         viewBlogFields = ViewBlogFields(
@@ -199,21 +265,21 @@ constructor(
         authToken: AuthToken,
         blogPost: BlogPost,
         stateEvent: StateEvent
-    ) =  flow {
-        val apiResult = safeApiCall(IO){
+    ) = flow {
+        val apiResult = safeApiCall(IO) {
             openApiMainService.deleteBlogPost(
                 "Token ${authToken.token!!}",
                 blogPost.slug
             )
         }
         emit(
-            object: ApiResponseHandler<BlogViewState, GenericResponse>(
+            object : ApiResponseHandler<BlogViewState, GenericResponse>(
                 response = apiResult,
                 stateEvent = stateEvent
-            ){
+            ) {
                 override suspend fun handleSuccess(resultObj: GenericResponse): DataState<BlogViewState> {
 
-                    if(resultObj.response == SUCCESS_BLOG_DELETED){
+                    if (resultObj.response == SUCCESS_BLOG_DELETED) {
                         blogPostDao.deleteBlogPost(blogPost)
                         return DataState.data(
                             response = Response(
@@ -223,8 +289,7 @@ constructor(
                             ),
                             stateEvent = stateEvent
                         )
-                    }
-                    else{
+                    } else {
                         return buildError(
                             ERROR_UNKNOWN,
                             UIComponentType.Dialog(),
@@ -243,9 +308,9 @@ constructor(
         body: RequestBody,
         image: MultipartBody.Part?,
         stateEvent: StateEvent
-    ) = flow{
+    ) = flow {
 
-        val apiResult = safeApiCall(IO){
+        val apiResult = safeApiCall(IO) {
             openApiMainService.updateBlog(
                 "Token ${authToken.token!!}",
                 slug,
@@ -255,10 +320,10 @@ constructor(
             )
         }
         emit(
-            object: ApiResponseHandler<BlogViewState, BlogCreateUpdateResponse>(
+            object : ApiResponseHandler<BlogViewState, BlogCreateUpdateResponse>(
                 response = apiResult,
                 stateEvent = stateEvent
-            ){
+            ) {
                 override suspend fun handleSuccess(resultObj: BlogCreateUpdateResponse): DataState<BlogViewState> {
 
                     val updatedBlogPost = resultObj.toBlogPost()
@@ -276,7 +341,7 @@ constructor(
                             uiComponentType = UIComponentType.Toast(),
                             messageType = MessageType.Success()
                         ),
-                        data =  BlogViewState(
+                        data = BlogViewState(
                             viewBlogFields = ViewBlogFields(
                                 blogPost = updatedBlogPost
                             )

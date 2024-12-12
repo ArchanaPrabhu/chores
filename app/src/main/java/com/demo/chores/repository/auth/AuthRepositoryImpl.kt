@@ -59,10 +59,17 @@ constructor(
         email: String,
         password: String
     ): Flow<DataState<AuthViewState>> = flow {
-
         val loginFieldErrors = LoginFields(email, password).isValidForLogin()
         if (loginFieldErrors.equals(LoginFields.LoginError.none())) {
-            var apiResult : ApiResult<LoginResponse> = ApiResult.Success(LoginResponse("Success", "", "authToken1", 1, "prabhuarc27@gmail.com"))
+            var apiResult: ApiResult<LoginResponse> = ApiResult.Success(
+                LoginResponse(
+                    "Success",
+                    "",
+                    "authToken1",
+                    1,
+                    "prabhuarc27@gmail.com"
+                )
+            )
             var apiResult2 = safeApiCall(IO) {
                 try {
 //                    openApiAuthService.login(email, password) as LoginResponse
@@ -98,7 +105,7 @@ constructor(
                                 AccountProperties(
                                     resultObj.pk,
                                     resultObj.email,
-                                    ""
+                                    "arprab"
                                 )
                             )
 
@@ -137,6 +144,14 @@ constructor(
                 )
             )
         }
+    }
+
+    override fun attemptLoginUsingCache(
+        stateEvent: StateEvent,
+        email: String,
+        password: String
+    ): Flow<DataState<AuthViewState>> {
+
     }
 
     override fun attemptRegistration(

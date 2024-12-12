@@ -1,5 +1,6 @@
 package com.demo.chores.di.main
 
+import android.content.SharedPreferences
 import com.demo.chores.api.main.OpenApiMainService
 import com.demo.chores.persistence.AccountPropertiesDao
 import com.demo.chores.persistence.AppDatabase
@@ -32,12 +33,14 @@ object MainModule {
     fun provideAccountRepository(
         openApiMainService: OpenApiMainService,
         accountPropertiesDao: AccountPropertiesDao,
-        sessionManager: SessionManager
+        sessionManager: SessionManager,
+        sharedPreferences: SharedPreferences
     ): AccountRepositoryImpl {
         return AccountRepositoryImpl(
             openApiMainService,
             accountPropertiesDao,
-            sessionManager
+            sessionManager,
+            sharedPreferences
         )
     }
 

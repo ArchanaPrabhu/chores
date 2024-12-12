@@ -169,6 +169,10 @@ class MainActivity : BaseActivity(),
         })
     }
 
+    override fun onResume() {
+        super.onResume()
+    }
+
     override fun expandAppBar() {
         findViewById<AppBarLayout>(R.id.app_bar).setExpanded(true)
     }

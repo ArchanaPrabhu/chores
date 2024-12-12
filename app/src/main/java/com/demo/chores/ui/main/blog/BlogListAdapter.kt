@@ -2,13 +2,11 @@ package com.demo.chores.ui.main.blog
 
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.*
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import com.demo.chores.R
-import com.demo.chores.databinding.LayoutBlogFilterBinding
 import com.demo.chores.databinding.LayoutBlogListItemBinding
 import com.demo.chores.models.BlogPost
 import com.demo.chores.util.DateUtils

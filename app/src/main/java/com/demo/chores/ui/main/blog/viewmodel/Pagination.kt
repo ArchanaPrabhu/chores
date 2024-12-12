@@ -21,7 +21,7 @@ fun BlogViewModel.resetPage(){
 @FlowPreview
 fun BlogViewModel.refreshFromCache(){
     setQueryExhausted(false)
-    setStateEvent(RestoreBlogListFromCache())
+    setStateEvent(RestoreBlogListWithDummyValue())
 }
 
 @FlowPreview
