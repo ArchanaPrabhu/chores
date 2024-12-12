@@ -59,33 +59,20 @@ constructor(
         email: String,
         password: String
     ): Flow<DataState<AuthViewState>> = flow {
+
         val loginFieldErrors = LoginFields(email, password).isValidForLogin()
-        if (loginFieldErrors.equals(LoginFields.LoginError.none())) {
-            var apiResult: ApiResult<LoginResponse> = ApiResult.Success(
-                LoginResponse(
-                    "Success",
-                    "",
-                    "authToken1",
-                    1,
-                    "prabhuarc27@gmail.com"
-                )
-            )
-            var apiResult2 = safeApiCall(IO) {
-                try {
-//                    openApiAuthService.login(email, password) as LoginResponse
-                } catch (exception: Exception) {
-
-                }
-            } as ApiResult<LoginResponse>
-
+        if(loginFieldErrors.equals(LoginFields.LoginError.none())){
+            val apiResult = safeApiCall(IO){
+                openApiAuthService.login(email, password)
+            }
             emit(
-                object : ApiResponseHandler<AuthViewState, LoginResponse>(
+                object: ApiResponseHandler<AuthViewState, LoginResponse>(
                     response = apiResult,
                     stateEvent = stateEvent
                 ) {
                     override suspend fun handleSuccess(resultObj: LoginResponse): DataState<AuthViewState> {
                         // Incorrect login credentials counts as a 200 response from server, so need to handle that
-                        if (resultObj.response.equals(GENERIC_AUTH_ERROR)) {
+                        if(resultObj.response.equals(GENERIC_AUTH_ERROR)){
                             return DataState.error(
                                 response = Response(
                                     INVALID_CREDENTIALS,
@@ -95,31 +82,29 @@ constructor(
                                 stateEvent = stateEvent
                             )
                         }
+                        accountPropertiesDao.insertOrIgnore(
+                            AccountProperties(
+                                resultObj.pk,
+                                resultObj.email,
+                                ""
+                            )
+                        )
+
                         // will return -1 if failure
                         val authToken = AuthToken(
                             resultObj.pk,
                             resultObj.token
                         )
-                        CoroutineScope(IO).launch {
-                            accountPropertiesDao.insertOrIgnore(
-                                AccountProperties(
-                                    resultObj.pk,
-                                    resultObj.email,
-                                    "arprab"
-                                )
+                        val result = authTokenDao.insert(authToken)
+                        if(result < 0){
+                            return DataState.error(
+                                response = Response(
+                                    ERROR_SAVE_AUTH_TOKEN,
+                                    UIComponentType.Dialog(),
+                                    MessageType.Error()
+                                ),
+                                stateEvent = stateEvent
                             )
-
-                            val result = authTokenDao.insert(authToken)
-//                            if (result < 0) {
-//                                return DataState.error(
-//                                    response = Response(
-//                                        ERROR_SAVE_AUTH_TOKEN,
-//                                        UIComponentType.Dialog(),
-//                                        MessageType.Error()
-//                                    ),
-//                                    stateEvent = stateEvent
-//                                )
-//                            }
                         }
                         saveAuthenticatedUserToPrefs(email)
 
@@ -134,7 +119,8 @@ constructor(
 
                 }.getResult()
             )
-        } else {
+        }
+        else{
             Log.d(TAG, "emitting error: ${loginFieldErrors}")
             emit(
                 buildError(
@@ -151,7 +137,8 @@ constructor(
         email: String,
         password: String
     ): Flow<DataState<AuthViewState>> {
-
+        // TODO
+        return TODO()
     }
 
     override fun attemptRegistration(
