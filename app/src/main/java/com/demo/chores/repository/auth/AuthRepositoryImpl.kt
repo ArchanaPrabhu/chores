@@ -1,6 +1,7 @@
 package com.demo.chores.repository.auth
 
 import android.content.SharedPreferences
+import android.provider.ContactsContract.Data
 import android.util.Log
 import com.demo.chores.api.auth.OpenApiAuthService
 import com.demo.chores.api.auth.network_responses.LoginResponse
@@ -18,6 +19,7 @@ import com.demo.chores.ui.auth.state.AuthViewState
 import com.demo.chores.ui.auth.state.LoginFields
 import com.demo.chores.ui.auth.state.RegistrationFields
 import com.demo.chores.util.ApiResponseHandler
+import com.demo.chores.util.ApiResult
 import com.demo.chores.util.CacheResponseHandler
 import com.demo.chores.util.DataState
 import com.demo.chores.util.ErrorHandling.Companion.ERROR_SAVE_ACCOUNT_PROPERTIES
@@ -30,10 +32,12 @@ import com.demo.chores.util.Response
 import com.demo.chores.util.StateEvent
 import com.demo.chores.util.SuccessHandling.Companion.RESPONSE_CHECK_PREVIOUS_AUTH_USER_DONE
 import com.demo.chores.util.UIComponentType
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @FlowPreview
@@ -58,9 +62,14 @@ constructor(
 
         val loginFieldErrors = LoginFields(email, password).isValidForLogin()
         if (loginFieldErrors.equals(LoginFields.LoginError.none())) {
-            val apiResult = safeApiCall(IO) {
-                openApiAuthService.login(email, password)
-            }
+            var apiResult : ApiResult<LoginResponse> = ApiResult.Success(LoginResponse("Success", "", "authToken1", 1, "prabhuarc27@gmail.com"))
+            var apiResult2 = safeApiCall(IO) {
+                try {
+//                    openApiAuthService.login(email, password) as LoginResponse
+                } catch (exception: Exception) {
+
+                }
+            } as ApiResult<LoginResponse>
 
             emit(
                 object : ApiResponseHandler<AuthViewState, LoginResponse>(
@@ -79,29 +88,31 @@ constructor(
                                 stateEvent = stateEvent
                             )
                         }
-                        accountPropertiesDao.insertOrIgnore(
-                            AccountProperties(
-                                resultObj.pk,
-                                resultObj.email,
-                                ""
-                            )
-                        )
-
                         // will return -1 if failure
                         val authToken = AuthToken(
                             resultObj.pk,
                             resultObj.token
                         )
-                        val result = authTokenDao.insert(authToken)
-                        if (result < 0) {
-                            return DataState.error(
-                                response = Response(
-                                    ERROR_SAVE_AUTH_TOKEN,
-                                    UIComponentType.Dialog(),
-                                    MessageType.Error()
-                                ),
-                                stateEvent = stateEvent
+                        CoroutineScope(IO).launch {
+                            accountPropertiesDao.insertOrIgnore(
+                                AccountProperties(
+                                    resultObj.pk,
+                                    resultObj.email,
+                                    ""
+                                )
                             )
+
+                            val result = authTokenDao.insert(authToken)
+//                            if (result < 0) {
+//                                return DataState.error(
+//                                    response = Response(
+//                                        ERROR_SAVE_AUTH_TOKEN,
+//                                        UIComponentType.Dialog(),
+//                                        MessageType.Error()
+//                                    ),
+//                                    stateEvent = stateEvent
+//                                )
+//                            }
                         }
                         saveAuthenticatedUserToPrefs(email)
 

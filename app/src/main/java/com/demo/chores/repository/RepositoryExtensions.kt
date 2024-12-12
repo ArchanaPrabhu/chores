@@ -26,7 +26,7 @@ suspend fun <T> safeApiCall(
     return withContext(dispatcher) {
         try {
             // throws TimeoutCancellationException
-            withTimeout(NETWORK_TIMEOUT){
+            withTimeout(NETWORK_TIMEOUT) {
                 Success(apiCall.invoke())
             }
         } catch (throwable: Throwable) {
@@ -35,9 +35,11 @@ suspend fun <T> safeApiCall(
                     val code = 408 // timeout error code
                     GenericError(code, NETWORK_ERROR_TIMEOUT)
                 }
+
                 is IOException -> {
                     NetworkError
                 }
+
                 is HttpException -> {
                     val code = throwable.code()
                     val errorResponse = convertErrorBody(throwable)
@@ -46,6 +48,7 @@ suspend fun <T> safeApiCall(
                         errorResponse
                     )
                 }
+
                 else -> {
                     GenericError(
                         null,
@@ -64,7 +67,7 @@ suspend fun <T> safeCacheCall(
     return withContext(dispatcher) {
         try {
             // throws TimeoutCancellationException
-            withTimeout(CACHE_TIMEOUT){
+            withTimeout(CACHE_TIMEOUT) {
                 CacheResult.Success(cacheCall.invoke())
             }
         } catch (throwable: Throwable) {
@@ -72,6 +75,7 @@ suspend fun <T> safeCacheCall(
                 is TimeoutCancellationException -> {
                     CacheResult.GenericError(CACHE_ERROR_TIMEOUT)
                 }
+
                 else -> {
                     CacheResult.GenericError(UNKNOWN_ERROR)
                 }
@@ -85,7 +89,7 @@ fun <ViewState> buildError(
     message: String,
     uiComponentType: UIComponentType,
     stateEvent: StateEvent?
-): DataState<ViewState>{
+): DataState<ViewState> {
     return DataState.error(
         response = Response(
             message = "${stateEvent?.errorInfo()}\n\nReason: ${message}",

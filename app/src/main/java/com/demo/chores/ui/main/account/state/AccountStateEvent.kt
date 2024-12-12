@@ -2,9 +2,9 @@ package com.demo.chores.ui.main.account.state
 
 import com.demo.chores.util.StateEvent
 
-sealed class AccountStateEvent: StateEvent {
+sealed class AccountStateEvent : StateEvent {
 
-    class GetAccountPropertiesEvent: AccountStateEvent() {
+    class GetAccountPropertiesEvent : AccountStateEvent() {
 
         override fun errorInfo(): String {
             return "Error retrieving account properties."
@@ -14,7 +14,7 @@ sealed class AccountStateEvent: StateEvent {
     data class UpdateAccountPropertiesEvent(
         val email: String,
         val username: String
-    ): AccountStateEvent() {
+    ) : AccountStateEvent() {
 
         override fun errorInfo(): String {
             return "Error updating account properties."
@@ -32,7 +32,13 @@ sealed class AccountStateEvent: StateEvent {
         }
     }
 
-    class None: AccountStateEvent() {
+    class DemoAccountPropertiesEvent : AccountStateEvent() {
+        override fun errorInfo(): String {
+            return "Error setting local data"
+        }
+    }
+
+    class None : AccountStateEvent() {
         override fun errorInfo(): String {
             return "None"
         }

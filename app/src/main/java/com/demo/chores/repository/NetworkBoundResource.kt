@@ -18,24 +18,23 @@ constructor(
     private val stateEvent: StateEvent,
     private val apiCall: suspend () -> NetworkObj?,
     private val cacheCall: suspend () -> CacheObj?
-)
-{
+) {
 
     private val TAG: String = "AppDebug"
 
-    val result: Flow<DataState<ViewState>> = flow{
+    val result: Flow<DataState<ViewState>> = flow {
 
         // ****** STEP 1: VIEW CACHE ******
         emit(returnCache(markJobComplete = false))
 
         // ****** STEP 2: MAKE NETWORK CALL, SAVE RESULT TO CACHE ******
-        val apiResult = safeApiCall(dispatcher){apiCall}
+        val apiResult = safeApiCall(dispatcher) { apiCall }
 
-        when(apiResult){
+        when (apiResult) {
             is ApiResult.GenericError -> {
                 emit(
                     buildError(
-                        apiResult.errorMessage?.let { it }?: UNKNOWN_ERROR,
+                        apiResult.errorMessage?.let { it } ?: UNKNOWN_ERROR,
                         UIComponentType.Dialog(),
                         stateEvent
                     )
@@ -53,7 +52,7 @@ constructor(
             }
 
             is ApiResult.Success -> {
-                if(apiResult.value?.invoke() == null){
+                if (apiResult.value?.invoke() == null) {
                     emit(
                         buildError(
                             UNKNOWN_ERROR,
@@ -61,8 +60,7 @@ constructor(
                             stateEvent
                         )
                     )
-                }
-                else{
+                } else {
                     updateCache(apiResult.value.invoke() as NetworkObj)
                 }
             }
@@ -73,15 +71,15 @@ constructor(
     }
 
     private suspend fun returnCache(markJobComplete: Boolean): DataState<ViewState> {
-        
-        val cacheResult = safeCacheCall(dispatcher){cacheCall.invoke()}
+
+        val cacheResult = safeCacheCall(dispatcher) { cacheCall.invoke() }
 
         var jobCompleteMarker: StateEvent? = null
-        if(markJobComplete){
+        if (markJobComplete) {
             jobCompleteMarker = stateEvent
         }
 
-        return object: CacheResponseHandler<ViewState, CacheObj>(
+        return object : CacheResponseHandler<ViewState, CacheObj>(
             response = cacheResult,
             stateEvent = jobCompleteMarker
         ) {
@@ -95,8 +93,6 @@ constructor(
     abstract suspend fun updateCache(networkObject: NetworkObj)
 
     abstract fun handleCacheSuccess(resultObj: CacheObj): DataState<ViewState> // make sure to return null for stateEvent
-
-
 }
 
 

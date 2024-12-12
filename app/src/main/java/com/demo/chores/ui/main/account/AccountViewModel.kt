@@ -23,9 +23,7 @@ class AccountViewModel
 constructor(
     val sessionManager: SessionManager,
     val accountRepository: AccountRepositoryImpl
-)
-    : BaseViewModel<AccountViewState>()
-{
+) : BaseViewModel<AccountViewState>() {
 
     override fun handleNewData(stateEvent: StateEvent?, data: AccountViewState) {
 
@@ -40,8 +38,7 @@ constructor(
 
     override fun setStateEvent(stateEvent: StateEvent) {
         sessionManager.cachedToken.value?.let { authToken ->
-            val job: Flow<DataState<AccountViewState>> = when(stateEvent){
-
+            val job: Flow<DataState<AccountViewState>> = when (stateEvent) {
                 is GetAccountPropertiesEvent -> {
                     accountRepository.getAccountProperties(
                         stateEvent = stateEvent,
@@ -69,7 +66,7 @@ constructor(
                 }
 
                 else -> {
-                    flow{
+                    flow {
                         emit(
                             DataState.error(
                                 response = Response(
@@ -84,12 +81,12 @@ constructor(
                 }
             }
             launchJob(stateEvent, job)
-        }?: sessionManager.logout()
+        } ?: sessionManager.logout()
     }
 
-    fun setAccountPropertiesData(accountProperties: AccountProperties){
+    fun setAccountPropertiesData(accountProperties: AccountProperties) {
         val update = getCurrentViewStateOrNew()
-        if(update.accountProperties == accountProperties){
+        if (update.accountProperties == accountProperties) {
             return
         }
         update.accountProperties = accountProperties
@@ -100,7 +97,7 @@ constructor(
         return AccountViewState()
     }
 
-    fun logout(){
+    fun logout() {
         sessionManager.logout()
     }
 

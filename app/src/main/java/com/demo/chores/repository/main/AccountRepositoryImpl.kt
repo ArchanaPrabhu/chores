@@ -26,8 +26,7 @@ constructor(
     val openApiMainService: OpenApiMainService,
     val accountPropertiesDao: AccountPropertiesDao,
     val sessionManager: SessionManager
-): AccountRepository
-{
+) : AccountRepository {
 
     private val TAG: String = "AppDebug"
 
@@ -35,18 +34,19 @@ constructor(
         authToken: AuthToken,
         stateEvent: StateEvent
     ): Flow<DataState<AccountViewState>> {
-        return object: NetworkBoundResource<AccountProperties, AccountProperties, AccountViewState>(
-            dispatcher = IO,
-            stateEvent = stateEvent,
-            apiCall = {
-                openApiMainService
-                    .getAccountProperties("Token ${authToken.token!!}")
-            },
-            cacheCall = {
-                accountPropertiesDao.searchByPk(authToken.account_pk!!).value
-            }
+        return object :
+            NetworkBoundResource<AccountProperties, AccountProperties, AccountViewState>(
+                dispatcher = IO,
+                stateEvent = stateEvent,
+                apiCall = {
+                    openApiMainService
+                        .getAccountProperties("Token ${authToken.token!!}")
+                },
+                cacheCall = {
+                    accountPropertiesDao.searchByPk(authToken.account_pk!!).value
+                }
 
-        ){
+            ) {
             override suspend fun updateCache(networkObject: AccountProperties) {
                 accountPropertiesDao.updateAccountProperties(
                     networkObject.pk,
@@ -75,8 +75,8 @@ constructor(
         email: String,
         username: String,
         stateEvent: StateEvent
-    ) = flow{
-        val apiResult = safeApiCall(IO){
+    ) = flow {
+        val apiResult = safeApiCall(IO) {
             openApiMainService.saveAccountProperties(
                 "Token ${authToken.token!!}",
                 email,
@@ -84,10 +84,10 @@ constructor(
             )
         }
         emit(
-            object: ApiResponseHandler<AccountViewState, GenericResponse>(
+            object : ApiResponseHandler<AccountViewState, GenericResponse>(
                 response = apiResult,
                 stateEvent = stateEvent
-            ){
+            ) {
                 override suspend fun handleSuccess(
                     resultObj: GenericResponse
                 ): DataState<AccountViewState> {
@@ -123,7 +123,7 @@ constructor(
         confirmNewPassword: String,
         stateEvent: StateEvent
     ) = flow {
-        val apiResult = safeApiCall(IO){
+        val apiResult = safeApiCall(IO) {
             openApiMainService.updatePassword(
                 "Token ${authToken.token!!}",
                 currentPassword,
@@ -132,10 +132,10 @@ constructor(
             )
         }
         emit(
-            object: ApiResponseHandler<AccountViewState, GenericResponse>(
+            object : ApiResponseHandler<AccountViewState, GenericResponse>(
                 response = apiResult,
                 stateEvent = stateEvent
-            ){
+            ) {
                 override suspend fun handleSuccess(
                     resultObj: GenericResponse
                 ): DataState<AccountViewState> {

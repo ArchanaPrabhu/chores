@@ -110,6 +110,7 @@ constructor(
     override fun onResume() {
         super.onResume()
         viewModel.setStateEvent(GetAccountPropertiesEvent())
+//        viewModel.setStateEvent(DemoAccountPropertiesEvent())
     }
 
     private fun setAccountDataFields(accountProperties: AccountProperties){

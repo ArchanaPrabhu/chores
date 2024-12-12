@@ -1,12 +1,18 @@
 package com.demo.chores.util
 
-abstract class CacheResponseHandler <ViewState, Data>(
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+abstract class CacheResponseHandler<ViewState, Data>(
     private val response: CacheResult<Data?>,
     private val stateEvent: StateEvent?
-){
-    suspend fun getResult(): DataState<ViewState>{
+) {
+    suspend fun getResult(): DataState<ViewState> {
 
-        return when(response){
+        return when (response) {
 
             is CacheResult.GenericError -> {
                 DataState.error(
@@ -20,7 +26,7 @@ abstract class CacheResponseHandler <ViewState, Data>(
             }
 
             is CacheResult.Success -> {
-                if(response.value == null){
+                if (response.value == null) {
                     DataState.error(
                         response = Response(
                             message = "${stateEvent?.errorInfo()}\n\nReason: Data is NULL.",
@@ -29,9 +35,10 @@ abstract class CacheResponseHandler <ViewState, Data>(
                         ),
                         stateEvent = stateEvent
                     )
-                }
-                else{
-                    handleSuccess(resultObj = response.value)
+                } else {
+                    withContext(Dispatchers.IO) {
+                        handleSuccess(resultObj = response.value)
+                    }
                 }
             }
 
